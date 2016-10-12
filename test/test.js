@@ -10,7 +10,7 @@ chai.use(spies);
 var spy = chai.spy;
 
 beforeEach(function() {
-	Module.clearHash();
+	Module.clearCache();
 	var self = this;
 	this.j = function(html, cb) {
 		if (typeof html == 'function') cb = html;
@@ -152,10 +152,10 @@ it('run validation on triggerType if field value is changed twice', function(cb)
 	});
 });
 
-it('hash validation result', function(cb) {
+it('cache validation result', function(cb) {
 	var t = this;
 	this.j(function($) {
-		var inst = Module.initField(t.form.$field, {focusoutDelay: 100, hash: true});
+		var inst = Module.initField(t.form.$field, {focusoutDelay: 100, cache: true});
 		var spiedValidate = spy.on(inst, 'validate');
 		t.form.$field.val('email').focus().blur();
 		setTimeout(function() {
@@ -171,10 +171,10 @@ it('hash validation result', function(cb) {
 	});
 });
 
-it('do not hash validation result if hash options is false', function(cb) {
+it('do not cache validation result if cache options is false', function(cb) {
 	var t = this;
 	this.j(function($) {
-		var inst = Module.initField(t.form.$field, {focusoutDelay: 100, hash: false});
+		var inst = Module.initField(t.form.$field, {focusoutDelay: 100, cache: false});
 		var spiedValidate = spy.on(inst, 'validate');
 		t.form.$field.val('email').focus().blur();
 		setTimeout(function() {

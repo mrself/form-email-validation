@@ -113,30 +113,30 @@ EmailValiditon.prototype = {
 	 */
 	run: function() {
 		if (!this.isValueChanged()) return;
-		if (this.isHashed())
-			return this.setHashedState();
+		if (this.isCached())
+			return this.setCachedState();
 		var self = this;
 		this.state = EmailValiditon.STATES.PENDING;
 		this.validate(this.value).done(function(result) {
-			EmailValiditon.setHash(self.value, result);
+			EmailValiditon.setCache(self.value, result);
 			self.setState(result);
 		});
 	},
 
 	/**
-	 * Set hashed value of state
+	 * Set cached value of state
 	 */
-	setHashedState: function() {
-		var hashed = EmailValiditon.getHash(this.value);
-		this.setState(hashed);
+	setCachedState: function() {
+		var cached = EmailValiditon.getCache(this.value);
+		this.setState(cached);
 	},
 
 	/**
-	 * If validation of valued was hashed
+	 * If validation of valued was cached
 	 * @return {Boolean}
 	 */
-	isHashed: function() {
-		return this.options.hash && EmailValiditon.hasHash(this.value);
+	isCached: function() {
+		return this.options.cache && EmailValiditon.hasCache(this.value);
 	},
 
 	isValueChanged: function() {
@@ -278,25 +278,25 @@ EmailValiditon.options = {
 	remoteValidate: false,
 	// Used only when `triggerType` contains 'focusout'
 	focusoutDelay: 400,
-	// If hash results
-	hash: true
+	// If cache results
+	cache: true
 };
 EmailValiditon.setOptions = function(options) {
 	this.options = $.extend(true, this.options, options);
 };
 
 EmailValiditon.hash = {};
-EmailValiditon.getHash = function(key) {
-	return this.hash[key];
+EmailValiditon.getCache = function(key) {
+	return this.cache[key];
 };
-EmailValiditon.setHash = function(key, value) {
-	this.hash[key] = value;
+EmailValiditon.setCache = function(key, value) {
+	this.cache[key] = value;
 };
-EmailValiditon.hasHash = function(key) {
-	return key in this.hash;
+EmailValiditon.hasCache = function(key) {
+	return key in this.cache;
 };
-EmailValiditon.clearHash = function() {
-	this.hash = {};
+EmailValiditon.clearCache = function() {
+	this.cache = {};
 };
 
 module.exports = EmailValiditon;
