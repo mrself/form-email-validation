@@ -114,7 +114,6 @@ EmailValiditon.prototype = {
 	 */
 	run: function() {
 		if (!this.isValueChanged()) {
-			this.scrollToFieldIfInvalid();
 			return;
 		}
 		if (this.isCached())
@@ -186,7 +185,6 @@ EmailValiditon.prototype = {
 	 * Disable form. Mark field as invalid
 	 */
 	setInValid: function() {
-		this.scrollToFieldIfInvalid();
 		this.formEnabled = false;
 		this.$submit.addClass(this.dName + 'Submit--disabled');
 		this.$field
