@@ -22,6 +22,18 @@ function EmailValiditon() {
 	 * @type {Boolean}
 	 */
 	this.formEnabled = true;
+
+	/**
+	 * Current email
+	 * @type {string}
+	 */
+	this.value = undefined;
+
+	/**
+	 * Last validated email
+	 * @type {string}
+	 */
+	this.previousValue = undefined;
 }
 
 EmailValiditon.prototype = {
@@ -82,19 +94,56 @@ EmailValiditon.prototype = {
 	 * @return {boolean|void}
 	 */
 	onSubmit: function() {
-		if (!('state' in this)) this.run();
+		if (!this.isStateSetted()) this.run();
 		if (!this.formEnabled)
 			return false;
 	},
 
+	/**
+	 * If state was given any value. 
+	 * Return 'false' only if user submit form without focus the $field
+	 * @return {Boolean}
+	 */
+	isStateSetted: function() {
+		return 'state' in this;
+	},
+
+	/**
+	 * Execute pre-validation, validation and post-validtion things
+	 */
 	run: function() {
-		var value = this.$field.val();
+		if (!this.isValueChanged()) return;
+		if (this.isCached())
+			return this.setCachedState();
 		var self = this;
 		this.state = EmailValiditon.STATES.PENDING;
-		this.validate(value).done(function(result) {
+		this.validate(this.value).done(function(result) {
+			EmailValiditon.setCache(self.value, result);
 			self.setState(result);
-			if (!result) return false;
 		});
+	},
+
+	/**
+	 * Set cached value of state
+	 */
+	setCachedState: function() {
+		var cached = EmailValiditon.getCache(this.value);
+		this.setState(cached);
+	},
+
+	/**
+	 * If validation of valued was cached
+	 * @return {Boolean}
+	 */
+	isCached: function() {
+		return this.options.cache && EmailValiditon.hasCache(this.value);
+	},
+
+	isValueChanged: function() {
+		this.value = this.$field.val();
+		if (this.previousValue == this.value) return false;
+		this.previousValue = this.value;
+		return true;
 	},
 
 	/**
@@ -225,13 +274,29 @@ EmailValiditon.initSelector = function(dName, options) {
 EmailValiditon.options = {
 	dName: 'femm',
 	validationReg: /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/i,
-	triggerType: ['submit', 'focusout'/*,'keyup'*/],
+	triggerType: ['focusout'/*,'keyup'*/],
 	remoteValidate: false,
 	// Used only when `triggerType` contains 'focusout'
-	focusoutDelay: 400
+	focusoutDelay: 400,
+	// If cache results
+	cache: true
 };
 EmailValiditon.setOptions = function(options) {
 	this.options = $.extend(true, this.options, options);
+};
+
+EmailValiditon.hash = {};
+EmailValiditon.getCache = function(key) {
+	return this.cache[key];
+};
+EmailValiditon.setCache = function(key, value) {
+	this.cache[key] = value;
+};
+EmailValiditon.hasCache = function(key) {
+	return key in this.cache;
+};
+EmailValiditon.clearCache = function() {
+	this.cache = {};
 };
 
 module.exports = EmailValiditon;
