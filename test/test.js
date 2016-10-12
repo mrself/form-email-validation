@@ -81,7 +81,7 @@ it('on init field has a the modifier class "inited"', function(cb) {
 });
 
 describe('remoteValidate option', function() {
-	it.only('#validate should be resolved with the value remoteValidate was resolved with', function(cb) {
+	it('#validate should be resolved with the value remoteValidate was resolved with', function(cb) {
 		var t = this;
 		this.j(function($) {
 			var def = $.Deferred();
@@ -97,6 +97,15 @@ describe('remoteValidate option', function() {
 				cb();
 			});
 		});
+	});
+});
+
+it('#setState throws an error when new state is not in allowed values', function(cb) {
+	var t = this;
+	this.j(function($) {
+		var inst = Module.initField(t.form.$field);
+		expect(inst.setState.bind(inst, 'sfs')).to.throw(Error);
+		cb();
 	});
 });
 

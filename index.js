@@ -102,7 +102,6 @@ EmailValiditon.prototype = {
 	 * @param {boolean|null|undefined} state 
 	 */
 	setState: function(state) {
-		this.state = state;
 		if (state === EmailValiditon.STATES.INVALID) {
 			this.setInValid();
 		} else if (state === EmailValiditon.STATES.VALID || 
@@ -110,6 +109,11 @@ EmailValiditon.prototype = {
 			this.setValid();
 		else if (state == EmailValiditon.STATES.UNDEFINED)
 			this.reset();
+		else {
+			state = EmailValiditon.STATES.UNDEFINED;
+			this.state = state;
+			throw new Error('Not allowed value of state');
+		}
 	},
 
 	/**
