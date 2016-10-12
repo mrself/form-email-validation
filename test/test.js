@@ -80,6 +80,26 @@ it('on init field has a the modifier class "inited"', function(cb) {
 	});
 });
 
+describe('remoteValidate option', function() {
+	it.only('#validate should be resolved with the value remoteValidate was resolved with', function(cb) {
+		var t = this;
+		this.j(function($) {
+			var def = $.Deferred();
+			def.resolve(null);
+			Module.setOptions({
+				remoteValidate: function(email) {
+					return def;
+				}
+			});
+			var inst = Module.initField(t.form.$field);
+			inst.validate('test@gmail.com').done(function(result) {
+				expect(result).to.be.eql(null);
+				cb();
+			});
+		});
+	});
+});
+
 
 function l(x) {
 	console.log(x);
