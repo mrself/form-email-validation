@@ -173,7 +173,7 @@ EmailValiditon.prototype = {
 	 */
 	reset: function() {
 		this.formEnabled = true;
-		this.$submit.removeClass(this.dName + 'Submit--disabled').prop('disabled', false);
+		this.$submit.removeClass(this.dName + 'Submit--disabled');
 		this.$field
 			.removeClass(this.dName + '--valid')
 			.removeClass(this.dName + '--invalid');
@@ -186,7 +186,7 @@ EmailValiditon.prototype = {
 	setInValid: function() {
 		if (!this.isFieldInViewport()) this.scrollToField();
 		this.formEnabled = false;
-		this.$submit.addClass(this.dName + 'Submit--disabled').prop('disabled', true);
+		this.$submit.addClass(this.dName + 'Submit--disabled');
 		this.$field
 			.removeClass(this.dName + '--valid')
 			.addClass(this.dName + '--invalid');
@@ -212,7 +212,7 @@ EmailValiditon.prototype = {
 	 */
 	setValid: function() {
 		this.formEnabled = true;
-		this.$submit.removeClass(this.dName + 'Submit--disabled').prop('disabled', false);
+		this.$submit.removeClass(this.dName + 'Submit--disabled');
 		this.$field.removeClass(this.dName + '--invalid').addClass(this.dName + '--valid');
 	},
 
