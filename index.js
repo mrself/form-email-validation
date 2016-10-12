@@ -274,7 +274,7 @@ EmailValiditon.initSelector = function(dName, options) {
 EmailValiditon.options = {
 	dName: 'femm',
 	validationReg: /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/i,
-	triggerType: ['submit', 'focusout'/*,'keyup'*/],
+	triggerType: ['focusout'/*,'keyup'*/],
 	remoteValidate: false,
 	// Used only when `triggerType` contains 'focusout'
 	focusoutDelay: 400,
