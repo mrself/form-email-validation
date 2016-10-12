@@ -83,7 +83,6 @@ EmailValiditon.prototype = {
 	 */
 	onSubmit: function() {
 		if (!('state' in this)) this.run();
-		l(this.formEnabled)
 		if (!this.formEnabled)
 			return false;
 	},
