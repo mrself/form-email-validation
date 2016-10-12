@@ -113,7 +113,8 @@ EmailValiditon.prototype = {
 	 */
 	run: function() {
 		if (!this.isValueChanged()) {
-			if (!this.isFieldInViewport()) this.scrollToField();
+			if (this.state == EmailValiditon.STATES.INVALID && !this.isFieldInViewport())
+				this.scrollToField();
 			return;
 		}
 		if (this.isCached())
