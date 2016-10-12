@@ -25,10 +25,6 @@ beforeEach(function() {
 	};
 });
 
-it('Init', function() {
-	
-});
-
 describe('Check if email field is validated for each trigger type', function() {
 	it('submit', function(cb) {
 		var t = this;
@@ -187,6 +183,17 @@ it('do not cache validation result if cache options is false', function(cb) {
 			expect(spiedValidate).to.have.been.called.exactly(3);
 			cb();
 		}, 600);
+	});
+});
+
+it('do not init plugin if it was inited on the $field', function(cb) {
+	var t = this;
+	this.j(function($) {
+		var inst = Module.initField(t.form.$field, {focusoutDelay: 100, cache: true});
+		var spiedSetEvents = spy.on(inst, 'setEvents');
+		var inst = Module.initField(t.form.$field, {focusoutDelay: 100, cache: true});
+		expect(spiedSetEvents).to.not.have.been.called;
+		cb();
 	});
 });
 
