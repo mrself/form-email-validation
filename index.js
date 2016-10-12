@@ -108,7 +108,6 @@ EmailValiditon.prototype = {
 		this.validate(this.value).done(function(result) {
 			EmailValiditon.setHash(self.value, result);
 			self.setState(result);
-			if (!result) return false;
 		});
 	},
 
