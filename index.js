@@ -95,6 +95,7 @@ EmailValiditon.prototype = {
 	 */
 	onSubmit: function() {
 		if (!this.isStateSetted()) this.run();
+		else this.scrollToFieldIfInvalid();
 		if (!this.formEnabled)
 			return false;
 	},
@@ -113,8 +114,7 @@ EmailValiditon.prototype = {
 	 */
 	run: function() {
 		if (!this.isValueChanged()) {
-			if (this.state == EmailValiditon.STATES.INVALID && !this.isFieldInViewport())
-				this.scrollToField();
+			this.scrollToFieldIfInvalid();
 			return;
 		}
 		if (this.isCached())
@@ -155,6 +155,7 @@ EmailValiditon.prototype = {
 	 * @param {boolean|null|undefined} state 
 	 */
 	setState: function(state) {
+		this.state = state;
 		if (state === EmailValiditon.STATES.INVALID) {
 			this.setInValid();
 		} else if (state === EmailValiditon.STATES.VALID || 
@@ -185,12 +186,17 @@ EmailValiditon.prototype = {
 	 * Disable form. Mark field as invalid
 	 */
 	setInValid: function() {
-		if (!this.isFieldInViewport()) this.scrollToField();
+		this.scrollToFieldIfInvalid();
 		this.formEnabled = false;
 		this.$submit.addClass(this.dName + 'Submit--disabled');
 		this.$field
 			.removeClass(this.dName + '--valid')
 			.addClass(this.dName + '--invalid');
+	},
+
+	scrollToFieldIfInvalid: function() {
+		if (this.state == EmailValiditon.STATES.INVALID && !this.isFieldInViewport())
+			this.scrollToField();
 	},
 
 	scrollToField: function() {
