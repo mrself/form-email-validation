@@ -28,7 +28,7 @@ EmailValiditon.prototype = {
 	constructor: EmailValiditon,
 
 	init: function() {
-		if (!this.defineForm() || !this.defineSubmitBtn()) return;
+		if (this.isInited || !this.defineForm() || !this.defineSubmitBtn()) return;
 		this.setEvents();
 		this.dName = this.options.dName;
 		this.$field.addClass(this.dName);
@@ -177,7 +177,7 @@ EmailValiditon.prototype = {
 	 * @param {Object} options New options
 	 */
 	setOptions: function(options) {
-		this.options = $.extend(true, this.options, options);
+		this.options = $.extend(true, this.options, EmailValiditon.options, options);
 		this.options.triggerType = [].concat(this.options.triggerType);
 	},
 };
@@ -192,14 +192,36 @@ EmailValiditon.STATES = {
 	PENDING: null
 };
 
-EmailValiditon.initField = function($field) {
+/**
+ * Init plugin on $field with options
+ * @param  {jQuery} $field  Email field
+ * @param  {Object} [options] Options
+ * @return {EmailValiditon]   Instance
+ */
+EmailValiditon.initField = function($field, options) {
 	var inst = new this;
 	inst.$field = $field;
-	inst.setOptions(this.options);
+	inst.setOptions(options);
 	inst.init();
 	return inst;
-
 };
+
+/**
+ * Init plugin on document name (class name) with options
+ * @param  {string} dName   
+ * @param  {object} [options] 
+ */
+EmailValiditon.initSelector = function(dName, options) {
+	options = options || {};
+	options.dName = dName;
+	$('.' + dName).each(function() {
+		var inst = new EmailValiditon;
+		inst.$field = $(this);
+		inst.setOptions(options);
+		inst.init();
+	});
+};
+
 EmailValiditon.options = {
 	dName: 'femm',
 	validationReg: /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/i,

@@ -17,7 +17,7 @@ beforeEach(function() {
 			self.window = window;
 			Faker.setJQuery($);
 			self.form = Faker.create('femm');
-			$('body').append(self.$form);
+			$('body').append(self.form.$form);
 			cb($);
 		});
 	};
@@ -105,6 +105,15 @@ it('#setState throws an error when new state is not in allowed values', function
 	this.j(function($) {
 		var inst = Module.initField(t.form.$field);
 		expect(inst.setState.bind(inst, 'sfs')).to.throw(Error);
+		cb();
+	});
+});
+
+it('.initSelector should init plugin on all element with a class == dName', function(cb) {
+	var t = this;
+	this.j(function($) {
+		Module.initSelector('femm');
+		expect(t.form.$field.hasClass('femm--inited')).to.be.true;
 		cb();
 	});
 });
