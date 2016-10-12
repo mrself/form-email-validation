@@ -199,6 +199,16 @@ it('do not init plugin if it was inited on the $field', function(cb) {
 	});
 });
 
+it('#setState should set state', function(cb) {
+	var t = this;
+	this.j(function($) {
+		var inst = Module.initField(t.form.$field, {focusoutDelay: 100, cache: true});
+		inst.setState(null);
+		expect(inst.state).to.be.eql(null);
+		cb();
+	});
+});
+
 
 function l(x) {
 	console.log(x);

@@ -12,7 +12,7 @@ beforeEach(function(cb) {
 });
 
 afterEach(function() {
-	// $fixture.empty();
+	$fixture.empty();
 });
 
 Faker.setJQuery($);
