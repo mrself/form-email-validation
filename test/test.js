@@ -191,10 +191,9 @@ it('do not cache validation result if cache options is false', function(cb) {
 it('do not init plugin if it was inited on the $field', function(cb) {
 	var t = this;
 	this.j(function($) {
+		var inst1 = Module.initField(t.form.$field, {focusoutDelay: 100, cache: true});
 		var inst = Module.initField(t.form.$field, {focusoutDelay: 100, cache: true});
-		var spiedSetEvents = spy.on(inst, 'setEvents');
-		var inst = Module.initField(t.form.$field, {focusoutDelay: 100, cache: true});
-		expect(spiedSetEvents).to.not.have.been.called;
+		expect(inst.$form).to.be.undefined;
 		cb();
 	});
 });
