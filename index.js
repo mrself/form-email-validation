@@ -101,12 +101,31 @@ EmailValiditon.prototype = {
 
 	run: function() {
 		if (!this.isValueChanged()) return;
+		if (this.isHashed())
+			return this.setHashedState();
 		var self = this;
 		this.state = EmailValiditon.STATES.PENDING;
 		this.validate(this.value).done(function(result) {
+			EmailValiditon.setHash(self.value, result);
 			self.setState(result);
 			if (!result) return false;
 		});
+	},
+
+	/**
+	 * Set hashed value of state
+	 */
+	setHashedState: function() {
+		var hashed = EmailValiditon.getHash(this.value);
+		this.setState(hashed);
+	},
+
+	/**
+	 * If validation of valued was hashed
+	 * @return {Boolean}
+	 */
+	isHashed: function() {
+		return this.options.hash && EmailValiditon.hasHash(this.value);
 	},
 
 	isValueChanged: function() {
@@ -247,10 +266,25 @@ EmailValiditon.options = {
 	triggerType: ['submit', 'focusout'/*,'keyup'*/],
 	remoteValidate: false,
 	// Used only when `triggerType` contains 'focusout'
-	focusoutDelay: 400
+	focusoutDelay: 400,
+	hash: true
 };
 EmailValiditon.setOptions = function(options) {
 	this.options = $.extend(true, this.options, options);
+};
+
+EmailValiditon.hash = {};
+EmailValiditon.getHash = function(key) {
+	return this.hash[key];
+};
+EmailValiditon.setHash = function(key, value) {
+	this.hash[key] = value;
+};
+EmailValiditon.hasHash = function(key) {
+	return key in this.hash;
+};
+EmailValiditon.clearHash = function() {
+	this.hash = {};
 };
 
 module.exports = EmailValiditon;
