@@ -94,9 +94,18 @@ EmailValiditon.prototype = {
 	 * @return {boolean|void}
 	 */
 	onSubmit: function() {
-		if (!('state' in this)) this.run();
+		if (!this.isStateSetted()) this.run();
 		if (!this.formEnabled)
 			return false;
+	},
+
+	/**
+	 * If state was given any value. 
+	 * Return 'false' only if user submit form without focus the $field
+	 * @return {Boolean}
+	 */
+	isStateSetted: function() {
+		return 'state' in this;
 	},
 
 	run: function() {
