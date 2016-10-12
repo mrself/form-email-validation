@@ -201,8 +201,8 @@ EmailValiditon.prototype = {
 
 	scrollToField: function() {
 		$('html, body').animate({
-			scrollTop: this.$field.offset().top + this.options.screenOffset + 1
-		}, 2000);
+			scrollTop: this.$field.offset().top - this.options.screenOffset + 1
+		}, 200);
 	},
 
 	isFieldInViewport: function() {
