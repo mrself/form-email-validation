@@ -278,6 +278,7 @@ EmailValiditon.options = {
 	remoteValidate: false,
 	// Used only when `triggerType` contains 'focusout'
 	focusoutDelay: 400,
+	// If hash results
 	hash: true
 };
 EmailValiditon.setOptions = function(options) {
