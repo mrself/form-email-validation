@@ -1,0 +1,1 @@
+window.EmailValiditon = require('../index.js');

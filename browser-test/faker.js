@@ -1,0 +1,1 @@
+window.Faker = require('../test/faker');
