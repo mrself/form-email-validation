@@ -108,6 +108,9 @@ EmailValiditon.prototype = {
 		return 'state' in this;
 	},
 
+	/**
+	 * Execute pre-validation, validation and post-validtion things
+	 */
 	run: function() {
 		if (!this.isValueChanged()) return;
 		if (this.isHashed())
