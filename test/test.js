@@ -16,6 +16,8 @@ beforeEach(function() {
 		if (typeof html == 'function') cb = html;
 		jsdom.env('', function(err, window) {
 			$ = require('jquery')(window);
+			global.window = window;
+			global.document = window.document;
 			self.window = window;
 			Faker.setJQuery($);
 			self.form = Faker.create('femm');
