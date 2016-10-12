@@ -80,6 +80,35 @@ it('on init field has a the modifier class "inited"', function(cb) {
 	});
 });
 
+describe('remoteValidate option', function() {
+	it('#validate should be resolved with the value remoteValidate was resolved with', function(cb) {
+		var t = this;
+		this.j(function($) {
+			var def = $.Deferred();
+			def.resolve(null);
+			Module.setOptions({
+				remoteValidate: function(email) {
+					return def;
+				}
+			});
+			var inst = Module.initField(t.form.$field);
+			inst.validate('test@gmail.com').done(function(result) {
+				expect(result).to.be.eql(null);
+				cb();
+			});
+		});
+	});
+});
+
+it('#setState throws an error when new state is not in allowed values', function(cb) {
+	var t = this;
+	this.j(function($) {
+		var inst = Module.initField(t.form.$field);
+		expect(inst.setState.bind(inst, 'sfs')).to.throw(Error);
+		cb();
+	});
+});
+
 
 function l(x) {
 	console.log(x);
