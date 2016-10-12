@@ -7,6 +7,7 @@ var chai = require('chai'),
 	Module = require('../index');
 
 chai.use(spies);
+var spy = chai.spy;
 
 beforeEach(function() {
 	var self = this;
@@ -115,6 +116,38 @@ it('.initSelector should init plugin on all element with a class == dName', func
 		Module.initSelector('femm');
 		expect(t.form.$field.hasClass('femm--inited')).to.be.true;
 		cb();
+	});
+});
+
+it('do not run validation on triggerType if field value is not changed', function(cb) {
+	var t = this;
+	this.j(function($) {
+		var inst = Module.initField(t.form.$field, {focusoutDelay: 100});
+		var spiedValidate = spy.on(inst, 'validate');
+		t.form.$field.val('email').focus().blur();
+		setTimeout(function() {
+			t.form.$field.focus().blur();
+		}, 200);
+		setTimeout(function() {
+			expect(spiedValidate).to.have.been.called.once;
+			cb();
+		}, 400);
+	});
+});
+
+it('run validation on triggerType if field value is changed twice', function(cb) {
+	var t = this;
+	this.j(function($) {
+		var inst = Module.initField(t.form.$field, {focusoutDelay: 100});
+		var spiedValidate = spy.on(inst, 'validate');
+		t.form.$field.val('email').focus().blur();
+		setTimeout(function() {
+			t.form.$field.val('email1').focus().blur();
+		}, 150);
+		setTimeout(function() {
+			expect(spiedValidate).to.have.been.called.twice;
+			cb();
+		}, 400);
 	});
 });
 

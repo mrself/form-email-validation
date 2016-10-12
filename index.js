@@ -22,6 +22,18 @@ function EmailValiditon() {
 	 * @type {Boolean}
 	 */
 	this.formEnabled = true;
+
+	/**
+	 * Current email
+	 * @type {string}
+	 */
+	this.value = undefined;
+
+	/**
+	 * Last validated email
+	 * @type {string}
+	 */
+	this.previousValue = undefined;
 }
 
 EmailValiditon.prototype = {
@@ -88,13 +100,20 @@ EmailValiditon.prototype = {
 	},
 
 	run: function() {
-		var value = this.$field.val();
+		if (!this.isValueChanged()) return;
 		var self = this;
 		this.state = EmailValiditon.STATES.PENDING;
-		this.validate(value).done(function(result) {
+		this.validate(this.value).done(function(result) {
 			self.setState(result);
 			if (!result) return false;
 		});
+	},
+
+	isValueChanged: function() {
+		this.value = this.$field.val();
+		if (this.previousValue == this.value) return false;
+		this.previousValue = this.value;
+		return true;
 	},
 
 	/**
