@@ -112,7 +112,10 @@ EmailValiditon.prototype = {
 	 * Execute pre-validation, validation and post-validtion things
 	 */
 	run: function() {
-		if (!this.isValueChanged()) return;
+		if (!this.isValueChanged()) {
+			if (!this.isFieldInViewport()) this.scrollToField();
+			return;
+		}
 		if (this.isCached())
 			return this.setCachedState();
 		var self = this;
@@ -181,11 +184,26 @@ EmailValiditon.prototype = {
 	 * Disable form. Mark field as invalid
 	 */
 	setInValid: function() {
+		if (!this.isFieldInViewport()) this.scrollToField();
 		this.formEnabled = false;
 		this.$submit.addClass(this.dName + 'Submit--disabled').prop('disabled', true);
 		this.$field
 			.removeClass(this.dName + '--valid')
 			.addClass(this.dName + '--invalid');
+	},
+
+	scrollToField: function() {
+		$('html, body').animate({
+			scrollTop: this.$field.offset().top + this.options.screenOffset + 1
+		}, 2000);
+	},
+
+	isFieldInViewport: function() {
+		var rect = this.$field[0].getBoundingClientRect();
+		var windowHeight = $(window).height();
+		var docRect = document.documentElement.getBoundingClientRect();
+		return !rect.top || (rect.top > this.options.screenOffset && 
+			(windowHeight == docRect.bottom || rect.bottom +  rect.height + this.options.screenOffset < windowHeight));
 	},
 
 	/**
@@ -279,13 +297,15 @@ EmailValiditon.options = {
 	// Used only when `triggerType` contains 'focusout'
 	focusoutDelay: 400,
 	// If cache results
-	cache: true
+	cache: true,
+	// Offset from top and bottom screen when defining if $field is in viewport
+	screenOffset: 30
 };
 EmailValiditon.setOptions = function(options) {
 	this.options = $.extend(true, this.options, options);
 };
 
-EmailValiditon.hash = {};
+EmailValiditon.cache = {};
 EmailValiditon.getCache = function(key) {
 	return this.cache[key];
 };
