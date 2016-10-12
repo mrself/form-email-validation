@@ -28,7 +28,7 @@ EmailValiditon.prototype = {
 	constructor: EmailValiditon,
 
 	init: function() {
-		if (!this.defineForm() || !this.defineSubmitBtn()) return;
+		if (this.isInited || !this.defineForm() || !this.defineSubmitBtn()) return;
 		this.setEvents();
 		this.dName = this.options.dName;
 		this.$field.addClass(this.dName);
