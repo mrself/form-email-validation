@@ -12,12 +12,6 @@ function EmailValiditon() {
 	this.$field = undefined;
 
 	/**
-	 * If plugin was inited on $field
-	 * @type {Boolean}
-	 */
-	this.isInited = false;
-
-	/**
 	 * If form could be proceeded
 	 * @type {Boolean}
 	 */
@@ -40,18 +34,21 @@ EmailValiditon.prototype = {
 	constructor: EmailValiditon,
 
 	init: function() {
-		if (this.isInited || !this.defineForm() || !this.defineSubmitBtn()) return;
-		this.setEvents();
 		this.dName = this.options.dName;
+		if (this.isInited() || !this.defineForm() || !this.defineSubmitBtn()) return;
+		this.setEvents();
 		this.$field.addClass(this.dName);
 		this.setIsInited();
+	},
+
+	isInited: function() {
+		return this.$field.hasClass(this.dName + '--inited');
 	},
 
 	/**
 	 * Set that a plugin is fully inited.
 	 */
 	setIsInited: function() {
-		this.isInited = true;
 		this.$field.addClass(this.dName + '--inited');
 	},
 
