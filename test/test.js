@@ -208,6 +208,21 @@ it('#setState should set state', function(cb) {
 	});
 });
 
+it('set state to undefined when validate deferred is rejected', function(cb) {
+	var t = this;
+	this.j(function($) {
+		var inst = Module.initField(t.form.$field, {
+			remoteValidate: function() {
+				var def = $.Deferred();
+				def.reject();
+				return def;
+			}
+		});
+		expect(inst.state).to.be.eql(undefined);
+		cb();
+	});
+});
+
 
 function l(x) {
 	console.log(x);
