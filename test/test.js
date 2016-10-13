@@ -80,6 +80,16 @@ it('on init field has a the modifier class "inited"', function(cb) {
 	});
 });
 
+it('do not init plugin if it was inited on the $field', function(cb) {
+	var t = this;
+	this.j(function($) {
+		var inst1 = Module.initField(t.form.$field, {focusoutDelay: 100, cache: true});
+		var inst = Module.initField(t.form.$field, {focusoutDelay: 100, cache: true});
+		expect(inst.$form).to.be.undefined;
+		cb();
+	});
+});
+
 describe('remoteValidate option', function() {
 	it('#validate should be resolved with the value remoteValidate was resolved with', function(cb) {
 		var t = this;
@@ -178,17 +188,6 @@ it('do not cache validation result if cache options is false', function(cb) {
 		}, 600);
 	});
 });
-
-it('do not init plugin if it was inited on the $field', function(cb) {
-	var t = this;
-	this.j(function($) {
-		var inst1 = Module.initField(t.form.$field, {focusoutDelay: 100, cache: true});
-		var inst = Module.initField(t.form.$field, {focusoutDelay: 100, cache: true});
-		expect(inst.$form).to.be.undefined;
-		cb();
-	});
-});
-
 
 describe('#setState', function() {
 	it('should set state', function(cb) {
