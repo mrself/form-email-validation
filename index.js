@@ -116,11 +116,16 @@ EmailValiditon.prototype = {
 		if (this.isCached())
 			return this.setCachedState();
 		var self = this;
-		this.state = EmailValiditon.STATES.PENDING;
+		this.setPendingState();
 		this.validate(this.value).done(function(result) {
 			EmailValiditon.setCache(self.value, result);
 			self.setState(result);
 		}).fail(this.setState.bind(this, EmailValiditon.STATES.UNDEFINED));
+	},
+
+	setPendingState: function() {
+		this.state = EmailValiditon.STATES.PENDING;
+		this.$field.addClass(this.dName + '--loading');
 	},
 
 	/**
@@ -152,15 +157,13 @@ EmailValiditon.prototype = {
 	 */
 	setState: function(state) {
 		this.state = state;
-		if (state === EmailValiditon.STATES.PENDING) {
-			this.$field.addClass(this.dName + '--loading');
-		} else if (state === EmailValiditon.STATES.INVALID) {
+		if (state === EmailValiditon.STATES.INVALID) {
 			this.setInValid();
 		} else if (state === EmailValiditon.STATES.VALID)
 			this.setValid();
 		else if (state === EmailValiditon.STATES.UNDEFINED)
 			this.reset();
-		else {
+		else if (state !== EmailValiditon.STATES.PENDING) {
 			this.reset();
 			this.state = EmailValiditon.STATES.UNDEFINED;
 			throw new Error('Not allowed value of state');
