@@ -92,7 +92,7 @@ EmailValiditon.prototype = {
 	 */
 	onSubmit: function() {
 		if (!this.isStateSetted()) this.run();
-		else this.scrollToFieldIfInvalid();
+		this.scrollToFieldIfInvalid();
 		if (!this.formEnabled)
 			return false;
 	},

@@ -237,6 +237,17 @@ it('set state to undefined when validate deferred is rejected', function(cb) {
 	});
 });
 
+it('call #scrollToFieldIfInvalid on submit if $field was not focused before', function(cb) {
+	var t = this;
+	this.j(function($) {
+		var inst = Module.initField(t.form.$field);
+		var spied = spy.on(inst, 'scrollToFieldIfInvalid');
+		t.form.$form.submit();
+		expect(spied).to.have.been.called.once();
+		cb();
+	});
+});
+
 
 function l(x) {
 	console.log(x);
