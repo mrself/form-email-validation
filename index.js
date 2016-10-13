@@ -120,9 +120,7 @@ EmailValiditon.prototype = {
 		this.validate(this.value).done(function(result) {
 			EmailValiditon.setCache(self.value, result);
 			self.setState(result);
-		}).fail(function() {
-			self.setState(EmailValiditon.STATES.UNDEFINED);
-		});
+		}).fail(this.setState.bind(this, EmailValiditon.STATES.UNDEFINED));
 	},
 
 	/**
