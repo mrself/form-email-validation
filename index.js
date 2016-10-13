@@ -92,7 +92,7 @@ EmailValiditon.prototype = {
 	 */
 	onSubmit: function() {
 		if (!this.isStateSetted()) this.run();
-		else this.scrollToFieldIfInvalid();
+		this.scrollToFieldIfInvalid();
 		if (!this.formEnabled)
 			return false;
 	},
@@ -120,9 +120,7 @@ EmailValiditon.prototype = {
 		this.validate(this.value).done(function(result) {
 			EmailValiditon.setCache(self.value, result);
 			self.setState(result);
-		}).fail(function() {
-			self.setState(EmailValiditon.STATES.UNDEFINED);
-		});
+		}).fail(this.setState.bind(this, EmailValiditon.STATES.UNDEFINED));
 	},
 
 	/**
@@ -154,16 +152,17 @@ EmailValiditon.prototype = {
 	 */
 	setState: function(state) {
 		this.state = state;
-		if (state === EmailValiditon.STATES.INVALID) {
+		if (state === EmailValiditon.STATES.PENDING) {
+			this.$field.addClass(this.dName + '--loading');
+		} else if (state === EmailValiditon.STATES.INVALID) {
 			this.setInValid();
-		} else if (state === EmailValiditon.STATES.VALID || 
-			state === EmailValiditon.STATES.UNDEFINED)
+		} else if (state === EmailValiditon.STATES.VALID)
 			this.setValid();
-		else if (state == EmailValiditon.STATES.UNDEFINED)
+		else if (state === EmailValiditon.STATES.UNDEFINED)
 			this.reset();
 		else {
-			state = EmailValiditon.STATES.UNDEFINED;
-			this.state = state;
+			this.reset();
+			this.state = EmailValiditon.STATES.UNDEFINED;
 			throw new Error('Not allowed value of state');
 		}
 	},
@@ -176,7 +175,8 @@ EmailValiditon.prototype = {
 		this.$submit.removeClass(this.dName + 'Submit--disabled');
 		this.$field
 			.removeClass(this.dName + '--valid')
-			.removeClass(this.dName + '--invalid');
+			.removeClass(this.dName + '--invalid')
+			.removeClass(this.dName + '--loading');
 	},
 
 	/**
@@ -188,7 +188,8 @@ EmailValiditon.prototype = {
 		this.$submit.addClass(this.dName + 'Submit--disabled');
 		this.$field
 			.removeClass(this.dName + '--valid')
-			.addClass(this.dName + '--invalid');
+			.addClass(this.dName + '--invalid')
+			.removeClass(this.dName + '--loading');
 	},
 
 	scrollToFieldIfInvalid: function() {
@@ -204,10 +205,7 @@ EmailValiditon.prototype = {
 
 	isFieldInViewport: function() {
 		var rect = this.$field[0].getBoundingClientRect();
-		var windowHeight = $(window).height();
-		var docRect = document.documentElement.getBoundingClientRect();
-		return !rect.top || (rect.top > this.options.screenOffset && 
-			(windowHeight == docRect.bottom || rect.bottom +  rect.height + this.options.screenOffset < windowHeight));
+		return rect.top >= 0 && document.documentElement.clientHeight >= rect.bottom;
 	},
 
 	/**
@@ -217,7 +215,10 @@ EmailValiditon.prototype = {
 	setValid: function() {
 		this.formEnabled = true;
 		this.$submit.removeClass(this.dName + 'Submit--disabled');
-		this.$field.removeClass(this.dName + '--invalid').addClass(this.dName + '--valid');
+		this.$field
+			.removeClass(this.dName + '--invalid')
+			.addClass(this.dName + '--valid')
+			.removeClass(this.dName + '--loading');
 	},
 
 	/**

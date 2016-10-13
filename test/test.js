@@ -80,6 +80,16 @@ it('on init field has a the modifier class "inited"', function(cb) {
 	});
 });
 
+it('do not init plugin if it was inited on the $field', function(cb) {
+	var t = this;
+	this.j(function($) {
+		var inst1 = Module.initField(t.form.$field, {focusoutDelay: 100, cache: true});
+		var inst = Module.initField(t.form.$field, {focusoutDelay: 100, cache: true});
+		expect(inst.$form).to.be.undefined;
+		cb();
+	});
+});
+
 describe('remoteValidate option', function() {
 	it('#validate should be resolved with the value remoteValidate was resolved with', function(cb) {
 		var t = this;
@@ -97,15 +107,6 @@ describe('remoteValidate option', function() {
 				cb();
 			});
 		});
-	});
-});
-
-it('#setState throws an error when new state is not in allowed values', function(cb) {
-	var t = this;
-	this.j(function($) {
-		var inst = Module.initField(t.form.$field);
-		expect(inst.setState.bind(inst, 'sfs')).to.throw(Error);
-		cb();
 	});
 });
 
@@ -188,25 +189,38 @@ it('do not cache validation result if cache options is false', function(cb) {
 	});
 });
 
-it('do not init plugin if it was inited on the $field', function(cb) {
-	var t = this;
-	this.j(function($) {
-		var inst1 = Module.initField(t.form.$field, {focusoutDelay: 100, cache: true});
-		var inst = Module.initField(t.form.$field, {focusoutDelay: 100, cache: true});
-		expect(inst.$form).to.be.undefined;
-		cb();
+describe('#setState', function() {
+	it('should set state', function(cb) {
+		var t = this;
+		this.j(function($) {
+			var inst = Module.initField(t.form.$field, {focusoutDelay: 100, cache: true});
+			inst.setState(null);
+			expect(inst.state).to.be.eql(null);
+			cb();
+		});
+	});
+	it('throws an error and call #reset when new state is not in allowed values', function(cb) {
+		var t = this;
+		this.j(function($) {
+			var inst = Module.initField(t.form.$field);
+			var spiedReset = spy.on(inst, 'reset');
+			expect(inst.setState.bind(inst, 'sfs')).to.throw(Error);
+			expect(spiedReset).to.have.been.called.once();
+			cb();
+		});
+	});
+	it('call #reset if state is undefined', function(cb) {
+		var t = this;
+		this.j(function($) {
+			var inst = Module.initField(t.form.$field);
+			var spiedReset = spy.on(inst, 'reset');
+			inst.setState(Module.STATES.UNDEFINED);
+			expect(spiedReset).to.have.been.called.once();
+			cb();
+		});
 	});
 });
 
-it('#setState should set state', function(cb) {
-	var t = this;
-	this.j(function($) {
-		var inst = Module.initField(t.form.$field, {focusoutDelay: 100, cache: true});
-		inst.setState(null);
-		expect(inst.state).to.be.eql(null);
-		cb();
-	});
-});
 
 it('set state to undefined when validate deferred is rejected', function(cb) {
 	var t = this;
@@ -219,6 +233,17 @@ it('set state to undefined when validate deferred is rejected', function(cb) {
 			}
 		});
 		expect(inst.state).to.be.eql(undefined);
+		cb();
+	});
+});
+
+it('call #scrollToFieldIfInvalid on submit if $field was not focused before', function(cb) {
+	var t = this;
+	this.j(function($) {
+		var inst = Module.initField(t.form.$field);
+		var spied = spy.on(inst, 'scrollToFieldIfInvalid');
+		t.form.$form.submit();
+		expect(spied).to.have.been.called.once();
 		cb();
 	});
 });
