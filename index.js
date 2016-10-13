@@ -152,16 +152,17 @@ EmailValiditon.prototype = {
 	 */
 	setState: function(state) {
 		this.state = state;
-		if (state === EmailValiditon.STATES.INVALID) {
+		if (state === EmailValiditon.STATES.PENDING) {
+			this.$field.addClass(this.dName + '--loading');
+		} else if (state === EmailValiditon.STATES.INVALID) {
 			this.setInValid();
 		} else if (state === EmailValiditon.STATES.VALID)
 			this.setValid();
-		else if (state == EmailValiditon.STATES.UNDEFINED)
+		else if (state === EmailValiditon.STATES.UNDEFINED)
 			this.reset();
 		else {
 			this.reset();
-			state = EmailValiditon.STATES.UNDEFINED;
-			this.state = state;
+			this.state = EmailValiditon.STATES.UNDEFINED;
 			throw new Error('Not allowed value of state');
 		}
 	},
@@ -174,7 +175,8 @@ EmailValiditon.prototype = {
 		this.$submit.removeClass(this.dName + 'Submit--disabled');
 		this.$field
 			.removeClass(this.dName + '--valid')
-			.removeClass(this.dName + '--invalid');
+			.removeClass(this.dName + '--invalid')
+			.removeClass(this.dName + '--loading');
 	},
 
 	/**
@@ -186,7 +188,8 @@ EmailValiditon.prototype = {
 		this.$submit.addClass(this.dName + 'Submit--disabled');
 		this.$field
 			.removeClass(this.dName + '--valid')
-			.addClass(this.dName + '--invalid');
+			.addClass(this.dName + '--invalid')
+			.removeClass(this.dName + '--loading');
 	},
 
 	scrollToFieldIfInvalid: function() {
@@ -215,7 +218,10 @@ EmailValiditon.prototype = {
 	setValid: function() {
 		this.formEnabled = true;
 		this.$submit.removeClass(this.dName + 'Submit--disabled');
-		this.$field.removeClass(this.dName + '--invalid').addClass(this.dName + '--valid');
+		this.$field
+			.removeClass(this.dName + '--invalid')
+			.addClass(this.dName + '--valid')
+			.removeClass(this.dName + '--loading');
 	},
 
 	/**
