@@ -205,10 +205,7 @@ EmailValiditon.prototype = {
 
 	isFieldInViewport: function() {
 		var rect = this.$field[0].getBoundingClientRect();
-		var windowHeight = $(window).height();
-		var docRect = document.documentElement.getBoundingClientRect();
-		return !rect.top || (rect.top > this.options.screenOffset && 
-			(windowHeight == docRect.bottom || rect.bottom +  rect.height + this.options.screenOffset < windowHeight));
+		return rect.top >= 0 && document.documentElement.clientHeight >= rect.bottom;
 	},
 
 	/**
