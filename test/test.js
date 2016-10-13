@@ -219,6 +219,15 @@ describe('#setState', function() {
 			cb();
 		});
 	});
+	it('remove loading modifier from $field when argument is different from "pending"', function(cb) {
+		var t = this;
+		this.j(function($) {
+			var inst = Module.initField(t.form.$field);
+			inst.setState(Module.STATES.UNDEFINED);
+			expect(inst.$field.hasClass(inst.dName + '--loading')).to.be.false;
+			cb();
+		});
+	});
 });
 
 
