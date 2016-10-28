@@ -1,3 +1,16 @@
+/**
+ * Terms:
+ * - field: email field
+ * 
+ * Validate a field with regExp and remote service.
+ * 
+ * Validation is run in the following options:
+ * 	- blur event on a field
+ * 	- submit the form containing a field
+ *
+ * On validation success a field and a submit button are marked as valid.
+ * On validation fail they are marked as invalid.
+ */
 function EmailValiditon() {
 	/**
 	 * Form containing $field
