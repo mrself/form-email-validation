@@ -2,3 +2,4 @@ node_modules
 .eslintrc
 .eslintignore
 browser-test/*.min.js
+*.log
