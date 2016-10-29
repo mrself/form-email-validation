@@ -1,0 +1,25 @@
+{
+  "name": "form-email-validation",
+  "version": "2.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "browser-sync": "^2.17.3",
+    "gulp": "^3.9.1",
+    "gulp-mocha": "^3.0.1",
+    "gulp-watch": "^4.3.10",
+    "gulp.browserify--adapter": "github:mrself/gulp.browserify--adapter",
+    "jquery": "^3.1.1",
+    "mocha-jsdom": "^1.1.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postversion": "git checkout master && git merge develop && git push && git push --tags && git co develop"
+  },
+  "author": "Yaroslav Vavrysh <yaruk.my@gmail.com>",
+  "license": "MIT"
+}
