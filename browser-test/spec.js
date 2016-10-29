@@ -5,7 +5,6 @@ beforeEach(function(cb) {
 	var form = Faker.create('femm');
 	$fixture.html(form.$form);
 	var inst = EM.initField(form.$field);
-	// $('body').append(form.$field);
 	this.inst = inst;
 	this.form = form;
 	cb();
@@ -15,7 +14,6 @@ afterEach(function() {
 	$fixture.empty();
 });
 
-Faker.setJQuery($);
 var EM = EmailValiditon;
 
 it('#isFieldInViewport return false if element is not visible', function() {
@@ -28,7 +26,7 @@ it('#isFieldInViewport return true if element is visible', function() {
 });
 
 it('#scrollToField should scroll to field', function(cb) {
-	this.form.$form.css({'margin-top': 2000});
+	this.form.$form.css({'margin-top': 1500});
 	this.inst.scrollToField();
 	var $field = this.form.$field;
 	var inst = this.inst;
@@ -38,7 +36,7 @@ it('#scrollToField should scroll to field', function(cb) {
 			scrollTop: 0
 		}, 1);
 		cb();
-	}, 3000);
+	}, 1000);
 });
 
 function l (x) {

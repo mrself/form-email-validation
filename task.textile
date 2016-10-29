@@ -1,0 +1,54 @@
+Validation triggers:
+	- blur
+	- submit
+
+Cases when validation runs:
+	- a user submits a form without focusing the field
+	- a user focuses the field and then submits
+		- submit by enter
+		- submit by clicking on sumbit button
+	- submit via js
+
+Validation triggers exceptions:
+	- if a user focuses the field, blurs and focuses again
+	- if a user clicks a submit button having the field focused (blur event should not trigger validation, only submit event)
+
+States:
+	- valid: email is valid
+	- invalid: email is invalid
+	- pending: email is being checked
+	- undefined: cannot check email (remote check fails)
+	- none: state is not defined
+
+States behaviour descriptions:
+	- valid
+		- the field has 'invalid' class
+		- submit button has 'disabled' class
+		- form can not be submitted
+	- invalid: opposite to valid
+	- pending
+		- the field has 'pending' class
+		- the field cannot be changed
+		- sumit has 'pending' class
+		- the form can not be submitted
+	- undefined
+		- if required
+			- form can not be submitted
+		- if not required
+			- form can be submitted
+
+Validation process:
+	- if an email was changed after last validation, exit
+	- if validation result was cached, exit
+	- if state is pending, exit
+	- validate regExp
+		- if false
+			- set invalid state
+			- cache result
+			- exit
+	- remote validate
+		- set pending state
+		- on resolve
+			- set state
+			- remove pending state
+			- cache result
