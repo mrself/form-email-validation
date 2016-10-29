@@ -24,7 +24,6 @@ beforeEach(function() {
 	global.window = window;
 	global.document = window.document;
 	self.window = window;
-	// Faker.setJQuery($);
 	form = Faker.create('femm');
 	$('body').append(form.$form);
 	module = Module.initField(form.$field, {
