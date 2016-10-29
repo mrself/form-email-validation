@@ -1,5 +1,3 @@
-var $;
-
 function Faker () {
 	this.create = function() {
 		var $form = $('<form />', {
@@ -26,14 +24,22 @@ function Faker () {
 	};
 }
 
-Faker.setJQuery = function(jQuery) {
-	$ = jQuery;
-};
-
 Faker.create = function(dName) {
 	var inst = new this;
 	inst.options = {dName: dName};
 	return inst.create();
+};
+
+Faker.deferred = function(type, value, delay) {
+	return function() {
+		var def = $.Deferred();
+		if (delay) {
+			setTimeout(function() {
+				def[type](value);
+			}, delay);
+		} else def[type](value);
+		return def;
+	};
 };
 
 module.exports = Faker;

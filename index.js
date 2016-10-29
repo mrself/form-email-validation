@@ -1,3 +1,16 @@
+/**
+ * Terms:
+ * - field: email field
+ * 
+ * Validate a field with regExp and remote service.
+ * 
+ * Validation is run in the following options:
+ * 	- blur event on a field
+ * 	- submit the form containing a field
+ *
+ * On validation success a field and a submit button are marked as valid.
+ * On validation fail they are marked as invalid.
+ */
 function EmailValiditon() {
 	/**
 	 * Form containing $field
@@ -12,12 +25,6 @@ function EmailValiditon() {
 	this.$field = undefined;
 
 	/**
-	 * If form could be proceeded
-	 * @type {Boolean}
-	 */
-	this.formEnabled = true;
-
-	/**
 	 * Current email
 	 * @type {string}
 	 */
@@ -28,28 +35,25 @@ function EmailValiditon() {
 	 * @type {string}
 	 */
 	this.previousValue = undefined;
+
+	/**
+	 * Timeout id for delayed blur handler
+	 * @type {number}
+	 */
+	this.blurTimeoutId = undefined;
 }
 
 EmailValiditon.prototype = {
-	constructor: EmailValiditon,
-
 	init: function() {
 		this.dName = this.options.dName;
 		if (this.isInited() || !this.defineForm() || !this.defineSubmitBtn()) return;
-		this.setEvents();
-		this.$field.addClass(this.dName);
 		this.setIsInited();
+		this.$field.addClass(this.dName);
+		this.setEvents();
 	},
 
 	isInited: function() {
 		return this.$field.hasClass(this.dName + '--inited');
-	},
-
-	/**
-	 * Set that a plugin is fully inited.
-	 */
-	setIsInited: function() {
-		this.$field.addClass(this.dName + '--inited');
 	},
 
 	/**
@@ -58,6 +62,7 @@ EmailValiditon.prototype = {
 	 */
 	defineSubmitBtn: function() {
 		this.$submit = this.$form.find('[type="submit"]');
+		this.$submit.addClass(this.dName + 'Submit');
 		return !!this.$submit.length;
 	},
 
@@ -70,78 +75,84 @@ EmailValiditon.prototype = {
 		return !!this.$form.length;
 	},
 
-	setEvents: function() {
-		if (~this.options.triggerType.indexOf('focusout'))
-			this.initBlurTrigger();
-		this.$form.on('submit', this.onSubmit.bind(this));
+	/**
+	 * Set that a plugin is fully inited.
+	 */
+	setIsInited: function() {
+		this.$field.addClass(this.dName + '--inited');
 	},
 
-	initBlurTrigger: function() {
-		var timeoutFlag, self = this;
+	setEvents: function() {
+		var self = this;
+		this.$form.on('submit', function(e) {
+			self.onSubmit.apply(self, arguments);
+		});
 		this.$field.on('blur', function() {
-			timeoutFlag = setTimeout(self.run.bind(self), self.options.focusoutDelay);
+			self.blurTimeoutId = setTimeout(function() {
+				self.run();
+			}, self.options.blurDelay);
 		}).on('focus', function() {
-			clearTimeout(timeoutFlag);
+			self.clearBlurTimeout();
 		});
 	},
 
-	/**
-	 * Called on form submit.
-	 * Prevent default form proceeding if an email is invalid
-	 * @return {boolean|void}
-	 */
-	onSubmit: function() {
-		if (!this.isStateSetted()) this.run();
-		this.scrollToFieldIfInvalid();
-		if (!this.formEnabled)
-			return false;
+	clearBlurTimeout: function() {
+		clearTimeout(this.blurTimeoutId);
 	},
 
-	/**
-	 * If state was given any value. 
-	 * Return 'false' only if user submit form without focus the $field
-	 * @return {Boolean}
-	 */
-	isStateSetted: function() {
-		return 'state' in this;
-	},
-
-	/**
-	 * Execute pre-validation, validation and post-validtion things
-	 */
 	run: function() {
-		if (!this.isValueChanged()) {
-			return;
+		this.clearBlurTimeout();
+		if (!this.isValueChanged()) return;
+		if (this.isState('pending')) return;
+		var def = $.Deferred();
+		if (EmailValiditon.hasCache(this.value)) {
+			return this.processCache(def);
 		}
-		if (this.isCached())
-			return this.setCachedState();
+		var self = this;
+		return this.validate().done(function(state) {
+			EmailValiditon.setCache(self.value, state);
+			self.setState(state);
+		});
+	},
+
+	isState: function(state) {
+		return this.state === EmailValiditon.STATES[state.toUpperCase()];
+	},
+
+	validate: function() {
+		var result = this.validateRegExp();
+		if (result) {
+			return this.remoteValidate();
+		}
+		var def = $.Deferred();
+		def.resolve(result);
+		return def;
+	},
+
+	/**
+	 * Validate an email with regular expression
+	 * @param  {string} email Email to validate
+	 * @return {boolean}      Result of validation
+	 */
+	validateRegExp: function(email) {
+		return this.options.validationReg.test(this.value);
+	},
+
+	remoteValidate: function() {
 		var self = this;
 		this.setPendingState();
-		this.validate(this.value).done(function(result) {
-			EmailValiditon.setCache(self.value, result);
-			self.setState(result);
-		}).fail(this.setState.bind(this, EmailValiditon.STATES.UNDEFINED));
+		return this.options.remoteValidate().done(function(state) {
+			self.setState(state);
+		}).fail(function() {
+			self.setState(EmailValiditon.STATES.UNDEFINED);
+		});
 	},
 
-	setPendingState: function() {
-		this.state = EmailValiditon.STATES.PENDING;
-		this.$field.addClass(this.dName + '--loading');
-	},
-
-	/**
-	 * Set cached value of state
-	 */
-	setCachedState: function() {
-		var cached = EmailValiditon.getCache(this.value);
+	processCache: function(def) {
+		var cached = EmailValiditon.getCache(this.email);
 		this.setState(cached);
-	},
-
-	/**
-	 * If validation of valued was cached
-	 * @return {Boolean}
-	 */
-	isCached: function() {
-		return this.options.cache && EmailValiditon.hasCache(this.value);
+		def.resolve(cached);
+		return def;
 	},
 
 	isValueChanged: function() {
@@ -149,6 +160,25 @@ EmailValiditon.prototype = {
 		if (this.previousValue == this.value) return false;
 		this.previousValue = this.value;
 		return true;
+	},
+
+	onSubmit: function(e, data) {
+		if (data && data.evPlugin === true) return;
+		e.preventDefault();
+		var result = this.run();
+		if (!result) return this.resolveStateOnSubmit();
+		var self = this;
+		result.done(function() {
+			self.resolveStateOnSubmit();
+		});
+	},
+
+	resolveStateOnSubmit: function() {
+		if (this.isState('valid')) {
+			this.$form.trigger('submit', {evPlugin: true});
+			this.$form.trigger('femm/submit');
+		}
+		this.scrollToFieldIfInvalid();
 	},
 
 	/**
@@ -162,9 +192,9 @@ EmailValiditon.prototype = {
 		} else if (state === EmailValiditon.STATES.VALID)
 			this.setValid();
 		else if (state === EmailValiditon.STATES.UNDEFINED)
-			this.reset();
+			this.resetState();
 		else if (state !== EmailValiditon.STATES.PENDING) {
-			this.reset();
+			this.resetState();
 			this.state = EmailValiditon.STATES.UNDEFINED;
 			throw new Error('Not allowed value of state');
 		}
@@ -173,8 +203,7 @@ EmailValiditon.prototype = {
 	/**
 	 * Reset form and field to default value as they were before plugin init
 	 */
-	reset: function() {
-		this.formEnabled = true;
+	resetState: function() {
 		this.$submit.removeClass(this.dName + 'Submit--disabled');
 		this.$field
 			.removeClass(this.dName + '--valid')
@@ -187,7 +216,6 @@ EmailValiditon.prototype = {
 	 * Disable form. Mark field as invalid
 	 */
 	setInValid: function() {
-		this.formEnabled = false;
 		this.$submit.addClass(this.dName + 'Submit--disabled');
 		this.$field
 			.removeClass(this.dName + '--valid')
@@ -195,20 +223,10 @@ EmailValiditon.prototype = {
 			.removeClass(this.dName + '--loading');
 	},
 
-	scrollToFieldIfInvalid: function() {
-		if (this.state == EmailValiditon.STATES.INVALID && !this.isFieldInViewport())
-			this.scrollToField();
-	},
-
-	scrollToField: function() {
-		$('html, body').animate({
-			scrollTop: this.$field.offset().top - this.options.screenOffset + 1
-		}, 200);
-	},
-
-	isFieldInViewport: function() {
-		var rect = this.$field[0].getBoundingClientRect();
-		return rect.top >= 0 && document.documentElement.clientHeight >= rect.bottom;
+	setPendingState: function() {
+		this.state = EmailValiditon.STATES.PENDING;
+		this.$field.addClass(this.dName + '--loading')
+			.prop('disabled', true);
 	},
 
 	/**
@@ -216,35 +234,28 @@ EmailValiditon.prototype = {
 	 * Enable form. Mark field as valid
 	 */
 	setValid: function() {
-		this.formEnabled = true;
 		this.$submit.removeClass(this.dName + 'Submit--disabled');
 		this.$field
 			.removeClass(this.dName + '--invalid')
 			.addClass(this.dName + '--valid')
-			.removeClass(this.dName + '--loading');
+			.removeClass(this.dName + '--loading')
+			.prop('disabled', false);
 	},
 
-	/**
-	 * Validate email
-	 * @param  {string} email Email to validate
-	 * @return {jQuery.Deferred} Deferred instance, which is resolved with a state
-	 */
-	validate: function(email) {
-		var result = this.validateRegExp(email);
-		if (result && this.options.remoteValidate)
-			return this.options.remoteValidate(email);
-		var def = $.Deferred();
-		def.resolve(result);
-		return def;
+	scrollToFieldIfInvalid: function() {
+		if (this.state == EmailValiditon.STATES.INVALID && !this.isFieldInViewport())
+			this.scrollToField();
 	},
 
-	/**
-	 * Validate an email with regular expression
-	 * @param  {string} email Email to validate
-	 * @return {boolean}      Result of validation
-	 */
-	validateRegExp: function(email) {
-		return this.options.validationReg.test(email);
+	isFieldInViewport: function() {
+		var rect = this.$field[0].getBoundingClientRect();
+		return rect.top >= 0 && document.documentElement.clientHeight >= rect.bottom;
+	},
+
+	scrollToField: function() {
+		$('html, body').animate({
+			scrollTop: this.$field.offset().top - this.options.screenOffset + 1
+		}, 200);
 	},
 
 	/**
@@ -255,16 +266,6 @@ EmailValiditon.prototype = {
 		this.options = $.extend(true, this.options, EmailValiditon.options, options);
 		this.options.triggerType = [].concat(this.options.triggerType);
 	},
-};
-
-EmailValiditon.STATES = {
-	// State can not be detected. It happens when #remoteValidation produces an error
-	UNDEFINED: undefined,
-	// State is valid
-	VALID: true,
-	// State is invalid
-	INVALID: false,
-	PENDING: null
 };
 
 /**
@@ -297,17 +298,31 @@ EmailValiditon.initSelector = function(dName, options) {
 	});
 };
 
+EmailValiditon.STATES = {
+	// State can not be detected. It happens when #remoteValidation produces an error
+	UNDEFINED: undefined,
+	// State is valid
+	VALID: true,
+	// State is invalid
+	INVALID: false,
+	PENDING: null
+};
+
 EmailValiditon.options = {
 	dName: 'femm',
 	validationReg: /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/i,
 	triggerType: ['focusout'/*,'keyup'*/],
-	remoteValidate: false,
-	// Used only when `triggerType` contains 'focusout'
-	focusoutDelay: 400,
+	remoteValidate: function() {
+		throw new Error('remoteValidate option must be provided');
+	},
+	// Used only when `triggerType` contains 'focusout: 400,
 	// If cache results
 	cache: true,
 	// Offset from top and bottom screen when defining if $field is in viewport
-	screenOffset: 30
+	screenOffset: 30,
+	// Delay to make sure that validation is ran only once in the following events:
+	// field focus > form submit button click
+	blurDelay: 100
 };
 EmailValiditon.setOptions = function(options) {
 	this.options = $.extend(true, this.options, options);

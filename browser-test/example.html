@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Tests</title>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+	<script src="index.min.js"></script>
+	<script src="faker.min.js"></script>
+
+	<style>
+		.femm,
+		.femm {
+			background-size: 1.25rem 1.25rem !important;
+			background-repeat: no-repeat !important;
+			background-position: center right !important;
+		}
+
+		.femm--invalid,
+		.femm--invalid:focus {
+			outline: 1px solid #d9534f !important;
+			background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23d9534f' viewBox='-2 -2 7 7'%3E%3Cpath stroke='%23d9534f' d='M0 0l3 3m0-3L0 3'/%3E%3Ccircle r='.5'/%3E%3Ccircle cx='3' r='.5'/%3E%3Ccircle cy='3' r='.5'/%3E%3Ccircle cx='3' cy='3' r='.5'/%3E%3C/svg%3E") !important;
+		}
+
+		.femm--valid,
+		.femm--valid:focus {
+			background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath fill='%235cb85c' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3E%3C/svg%3E") !important;
+			outline: 1px solid #5cb85c !important;
+		}
+
+		.femm--loading,
+		.femm--loading:focus {
+			background-image: url("data:image/svg+xml,%3Csvg version='1.1' id='loader-1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' x='0px' y='0px' width='40px' height='40px' viewBox='0 0 50 50' style='enable-background:new 0 0 50 50;' xml:space='preserve'%3E %3Cpath fill='%231165fd' d='M43.935,25.145c0-10.318-8.364-18.683-18.683-18.683c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615c8.072,0,14.615,6.543,14.615,14.615H43.935z'%3E %3CanimateTransform attributeType='xml' attributeName='transform' type='rotate' from='0 25 25' to='360 25 25' dur='0.6s' repeatCount='indefinite'/%3E %3C/path%3E %3C/svg%3E") !important;
+			cursor: wait;
+		}
+
+		.femmSubmit--disabled {
+			cursor: not-allowed;
+		}
+	</style>
+</head>
+<body>
+	<form action="/example.html">
+		<input class="email" type="text">
+		<input type="submit" value="Submit">
+	</form>
+
+	<form action="#">
+		<input class="email1" type="text">
+		<input type="submit" value="Submit">
+	</form>
+	
+	<script>
+		var inst = EmailValiditon.initField($('.email'));
+		inst.options.remoteValidate = Faker.deferred('resolve', true, 1500);
+	</script>
+</body>
+</html>
