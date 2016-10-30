@@ -241,9 +241,11 @@ describe('Options', function() {
 
 describe('State', function() {
 	it('#setInvalid', function() {
+		module.setPendingState();
 		module.setInValid();
 		expect(form.$field.attr('class')).to.eql('femm femm--inited femm--invalid');
 		expect(form.$submit.attr('class')).to.eql('femmSubmit femmSubmit--disabled');
+		expect(module.$field.prop('disabled')).to.be.false;
 	});
 
 	it('#setValid', function() {
