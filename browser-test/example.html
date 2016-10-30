@@ -53,6 +53,9 @@
 	<script>
 		var inst = EmailValiditon.initField($('.email'));
 		inst.options.remoteValidate = Faker.deferred('resolve', undefined, 1500);
+		inst.$form[0].submit = function() {
+			l('Form is submitted');
+		};
 	</script>
 </body>
 </html>
