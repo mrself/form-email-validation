@@ -316,7 +316,7 @@ EmailValiditon.options = {
 	screenOffset: 30,
 	// Delay to make sure that validation is ran only once in the following events:
 	// field focus > form submit button click
-	blurDelay: 100,
+	blurDelay: 200,
 	// Delay on keyup after which reset any state
 	keyupResetDelay: 200
 };
