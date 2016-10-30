@@ -193,10 +193,28 @@ describe('State', function() {
 		expect(form.$submit.attr('class')).to.eql('femmSubmit');
 	});
 
-	it('#resetState', function() {
+	it('#resetState after #setInValid', function() {
+		module.setInValid();
 		module.resetState();
 		expect(form.$field.attr('class')).to.eql('femm femm--inited');
 		expect(form.$submit.attr('class')).to.eql('femmSubmit');
+		expect(module.$field.prop('disabled')).to.be.false;
+	});
+
+	it('#resetState after #setPendingState', function() {
+		module.setPendingState();
+		module.resetState();
+		expect(form.$field.attr('class')).to.eql('femm femm--inited');
+		expect(form.$submit.attr('class')).to.eql('femmSubmit');
+		expect(module.$field.prop('disabled')).to.be.false;
+	});
+
+	it('#resetState after #setValid', function() {
+		module.setValid();
+		module.resetState();
+		expect(form.$field.attr('class')).to.eql('femm femm--inited');
+		expect(form.$submit.attr('class')).to.eql('femmSubmit');
+		expect(module.$field.prop('disabled')).to.be.false;
 	});
 
 	it('is "pending" when remote validation starts', function() {

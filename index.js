@@ -207,7 +207,8 @@ EmailValiditon.prototype = {
 		this.$field
 			.removeClass(this.dName + '--valid')
 			.removeClass(this.dName + '--invalid')
-			.removeClass(this.dName + '--loading');
+			.removeClass(this.dName + '--loading')
+			.prop('disabled', false);
 	},
 
 	/**
