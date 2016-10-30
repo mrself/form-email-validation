@@ -188,6 +188,23 @@ describe('Validation process', function() {
 	});
 });
 
+describe('Options', function() {
+	it('pass email to remoteValidate option', function(cb) {
+		var passedEmail;
+		module.options.remoteValidate = function(email) {
+			var def = $.Deferred();
+			passedEmail = email;
+			def.resolve();
+			return def;
+		};
+		module.value = 'name@gmail.com';
+		module.remoteValidate().done(function() {
+			expect(passedEmail).to.eql('name@gmail.com');
+			cb();
+		});
+	});
+});
+
 describe('State', function() {
 	it('#setInvalid', function() {
 		var spied = spy();
