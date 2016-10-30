@@ -163,7 +163,7 @@ EmailValiditon.prototype = {
 
 	isValueChanged: function() {
 		this.value = this.$field.val();
-		if (this.previousValue == this.value) return false;
+		if (this.previousValue === this.value) return false;
 		this.previousValue = this.value;
 		return true;
 	},
