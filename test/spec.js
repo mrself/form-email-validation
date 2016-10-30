@@ -252,28 +252,40 @@ describe('State', function() {
 		expect(form.$submit.attr('class')).to.eql('femmSubmit');
 	});
 
-	it('#resetState after #setInValid', function() {
-		module.setInValid();
-		module.resetState();
-		expect(form.$field.attr('class')).to.eql('femm femm--inited');
-		expect(form.$submit.attr('class')).to.eql('femmSubmit');
-		expect(module.$field.prop('disabled')).to.be.false;
-	});
+	describe('#resetState', function() {
+		it('#resetState after #setInValid', function() {
+			module.setInValid();
+			module.resetState();
+			expect(form.$field.attr('class')).to.eql('femm femm--inited');
+			expect(form.$submit.attr('class')).to.eql('femmSubmit');
+			expect(module.$field.prop('disabled')).to.be.false;
+		});
 
-	it('#resetState after #setPendingState', function() {
-		module.setPendingState();
-		module.resetState();
-		expect(form.$field.attr('class')).to.eql('femm femm--inited');
-		expect(form.$submit.attr('class')).to.eql('femmSubmit');
-		expect(module.$field.prop('disabled')).to.be.false;
-	});
+		it('#resetState after #setPendingState', function() {
+			module.setPendingState();
+			module.resetState();
+			expect(form.$field.attr('class')).to.eql('femm femm--inited');
+			expect(form.$submit.attr('class')).to.eql('femmSubmit');
+			expect(module.$field.prop('disabled')).to.be.false;
+		});
 
-	it('#resetState after #setValid', function() {
-		module.setValid();
-		module.resetState();
-		expect(form.$field.attr('class')).to.eql('femm femm--inited');
-		expect(form.$submit.attr('class')).to.eql('femmSubmit');
-		expect(module.$field.prop('disabled')).to.be.false;
+		it('#resetState after #setValid', function() {
+			module.setValid();
+			module.resetState();
+			expect(form.$field.attr('class')).to.eql('femm femm--inited');
+			expect(form.$submit.attr('class')).to.eql('femmSubmit');
+			expect(module.$field.prop('disabled')).to.be.false;
+		});
+
+		it('reset state on keyup', function(cb) {
+			module.setInValid();
+			var spied = spy.on(module, 'resetState');
+			module.$field.keyup().addClass('dsds');
+			setTimeout(function() {
+				expect(spied).to.have.been.called();
+				cb();
+			}, module.options.keyupResetDelay + 3);
+		});
 	});
 
 	it('is "pending" when remote validation starts', function() {
@@ -293,15 +305,5 @@ describe('State', function() {
 			expect(module.state).to.eql(Module.STATES.UNDEFINED);
 			cb();
 		});
-	});
-
-	it('reset state on keyup', function(cb) {
-		module.setInValid();
-		var spied = spy.on(module, 'resetState');
-		module.$field.keyup().addClass('dsds');
-		setTimeout(function() {
-			expect(spied).to.have.been.called();
-			cb();
-		}, module.options.keyupResetDelay + 3);
 	});
 });
