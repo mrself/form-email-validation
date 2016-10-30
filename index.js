@@ -174,7 +174,7 @@ EmailValiditon.prototype = {
 	},
 
 	resolveStateOnSubmit: function() {
-		if (this.isState('valid')) {
+		if (this.isState('valid') || this.isState('undefined')) {
 			this.$form.trigger('submit', {evPlugin: true});
 			this.$form.trigger('femm/submit');
 		}

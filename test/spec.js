@@ -175,6 +175,17 @@ describe('Validation process', function() {
 			cb();
 		}, 10);
 	});
+
+	it('form can be submitted if validation can not be proceeded', function(cb) {
+		var spied = spy.on(module.$form[0], 'submit');
+		module.options.remoteValidate = Faker.deferred('resolve', undefined, 1);
+		module.$field.val('name@gmail.com');
+		module.run().done(function() {
+			module.$form.submit();
+			expect(spied).to.have.been.called();
+			cb();
+		});
+	});
 });
 
 describe('State', function() {
