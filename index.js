@@ -178,7 +178,6 @@ EmailValiditon.prototype = {
 			this.$form.trigger('submit', {evPlugin: true});
 			this.$form.trigger('femm/submit');
 		}
-		this.scrollToFieldIfInvalid();
 	},
 
 	/**
@@ -220,7 +219,8 @@ EmailValiditon.prototype = {
 		this.$field
 			.removeClass(this.dName + '--valid')
 			.addClass(this.dName + '--invalid')
-			.removeClass(this.dName + '--loading');
+			.removeClass(this.dName + '--loading')
+			.focus();
 	},
 
 	setPendingState: function() {
@@ -240,22 +240,6 @@ EmailValiditon.prototype = {
 			.addClass(this.dName + '--valid')
 			.removeClass(this.dName + '--loading')
 			.prop('disabled', false);
-	},
-
-	scrollToFieldIfInvalid: function() {
-		if (this.state == EmailValiditon.STATES.INVALID && !this.isFieldInViewport())
-			this.scrollToField();
-	},
-
-	isFieldInViewport: function() {
-		var rect = this.$field[0].getBoundingClientRect();
-		return rect.top >= 0 && document.documentElement.clientHeight >= rect.bottom;
-	},
-
-	scrollToField: function() {
-		$('html, body').animate({
-			scrollTop: this.$field.offset().top - this.options.screenOffset + 1
-		}, 200);
 	},
 
 	/**

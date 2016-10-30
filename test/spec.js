@@ -44,9 +44,16 @@ describe('Validation triggers', function() {
 		});
 
 		it('two submits', function(cb) {
-			var spy = chai.spy.on(module, 'run');
+			/**
+			 * Spy on #validate, not on #run.
+			 * Because when the value is invalid, the field is focused.
+			 * And the second submit automatically triggers blur event which 
+			 * calls #run one more time. So we have 3 calls of #run instead of 2
+			 */
+			var spy = chai.spy.on(module, 'validate');
 			form.$form.submit();
 			setTimeout(function() {
+				form.$field.val('email');
 				form.$form.submit();
 				setTimeout(function() {
 					expect(spy).to.have.been.called.twice();
@@ -172,9 +179,12 @@ describe('Validation process', function() {
 
 describe('State', function() {
 	it('#setInvalid', function() {
+		var spied = spy();
+		module.$field.on('focus', spied);
 		module.setInValid();
 		expect(form.$field.attr('class')).to.eql('femm femm--inited femm--invalid');
 		expect(form.$submit.attr('class')).to.eql('femmSubmit femmSubmit--disabled');
+		expect(spied).to.have.been.called();
 	});
 
 	it('#setValid', function() {
