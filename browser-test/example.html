@@ -42,6 +42,7 @@
 	<form action="/example.html">
 		<input class="email" type="text">
 		<input type="submit" value="Submit">
+		<p>name@gmail.com</p>
 	</form>
 
 	<form action="#">
@@ -51,7 +52,7 @@
 	
 	<script>
 		var inst = EmailValiditon.initField($('.email'));
-		inst.options.remoteValidate = Faker.deferred('resolve', true, 1500);
+		inst.options.remoteValidate = Faker.deferred('resolve', undefined, 1500);
 	</script>
 </body>
 </html>
