@@ -148,12 +148,9 @@ EmailValiditon.prototype = {
 	},
 
 	remoteValidate: function() {
-		var self = this;
 		this.setPendingState();
-		return this.options.remoteValidate(this.value).done(function(state) {
-			self.setState(state);
-		}).fail(function() {
-			self.setState(EmailValiditon.STATES.UNDEFINED);
+		return this.options.remoteValidate(this.value).pipe(null, function() {
+			return EmailValiditon.STATES.UNDEFINED;
 		});
 	},
 

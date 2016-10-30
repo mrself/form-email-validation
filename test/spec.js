@@ -194,20 +194,49 @@ describe('Validation process', function() {
 });
 
 describe('Options', function() {
-	it('pass email to remoteValidate option', function(cb) {
-		var passedEmail;
-		module.options.remoteValidate = function(email) {
-			var def = $.Deferred();
-			passedEmail = email;
-			def.resolve();
-			return def;
-		};
-		module.value = 'name@gmail.com';
-		module.remoteValidate().done(function() {
-			expect(passedEmail).to.eql('name@gmail.com');
-			cb();
+	describe('remoteValidate', function() {
+		it('pass email to remoteValidate option', function(cb) {
+			var passedEmail;
+			module.options.remoteValidate = function(email) {
+				var def = $.Deferred();
+				passedEmail = email;
+				def.resolve();
+				return def;
+			};
+			module.value = 'name@gmail.com';
+			module.remoteValidate().done(function() {
+				expect(passedEmail).to.eql('name@gmail.com');
+				cb();
+			});
+		});
+
+		it('#validate is receive with the value remoteValidate deferred is resolved', function(cb) {
+			module.value = 'name@gmail.com';
+			module.options.remoteValidate = function() {
+				var def = $.Deferred();
+				def.resolve(true);
+				return def;
+			};
+			module.validate().always(function(state) {
+				expect(state).to.be.true;
+				cb();
+			});
+		});
+
+		it('#validate is receive undefined if remoteValidate is rejected', function(cb) {
+			module.value = 'name@gmail.com';
+			module.options.remoteValidate = function() {
+				var def = $.Deferred();
+				def.reject();
+				return def;
+			};
+			module.validate().always(function(state) {
+				expect(state).to.eql(Module.STATES.UNDEFINED);
+				cb();
+			});
 		});
 	});
+	
 });
 
 describe('State', function() {
