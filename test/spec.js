@@ -102,6 +102,14 @@ describe('Init', function() {
 		var module2 = Module.initField(form.$field);
 		expect(module2.$form).to.be.undefined;
 	});
+
+	it('set dName in class', function() {
+		form = Faker.create('femm');
+		form.$field.addClass('custom');
+		$('#fixture').html(form.$form);
+		module = Module.initField(form.$field, {dName: 'custom'});
+		expect(module.$field.hasClass('custom')).to.be.true;
+	});
 });
 
 describe('Validation process', function() {
