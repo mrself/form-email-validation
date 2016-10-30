@@ -118,7 +118,7 @@ EmailValiditon.prototype = {
 			return this.processCache(def);
 		}
 		var self = this;
-		return this.validate().done(function(state) {
+		return this.validate().always(function(state) {
 			EmailValiditon.setCache(self.value, state);
 			self.setState(state);
 		});
