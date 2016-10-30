@@ -326,3 +326,31 @@ it('#isLetterKey', function() {
 	expect(module.isLetterKey({keyCode: 65})).to.be.true;
 	expect(module.isLetterKey({keyCode: 90})).to.be.true;
 });
+
+
+describe('User operations', function() {
+	it('submit > keyup > remove > blur: the field must be marked as invalid', function(cb) {
+		module.$form.submit();
+		module.$field.trigger($.Event('keyup', {keyCode: 66}));
+		
+		setTimeout(function() {
+			module.$field.trigger($.Event('keyup', {keyCode: 8})); // backspace
+			module.$field.blur();
+			setTimeout(function() {
+				expect(module.$field.hasClass('femm--invalid')).to.be.true;
+				cb();
+			}, module.options.blurDelay + 1);
+		}, module.options.keyupResetDelay + 1);
+	});
+});
+
+
+describe('cache', function() {
+	it('#setCachedState sets cached state for the email', function() {
+		module.$field.val('name');
+		var spiedSetState = spy.on(module, 'setState');
+		Module.setCache('name', false);
+		module.run();
+		expect(spiedSetState).to.have.been.called.with(false);
+	});
+});

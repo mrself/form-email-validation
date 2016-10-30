@@ -31,12 +31,6 @@ function EmailValiditon() {
 	this.value = undefined;
 
 	/**
-	 * Last validated email
-	 * @type {string}
-	 */
-	this.previousValue = undefined;
-
-	/**
 	 * Timeout id for delayed blur handler
 	 * @type {number}
 	 */
@@ -112,11 +106,10 @@ EmailValiditon.prototype = {
 
 	run: function() {
 		this.clearBlurTimeout();
-		if (!this.isValueChanged()) return;
 		if (this.isState('pending')) return;
-		var def = $.Deferred();
+		this.value = this.$field.val();
 		if (EmailValiditon.hasCache(this.value)) {
-			return this.processCache(def);
+			return this.setCachedState();
 		}
 		var self = this;
 		return this.validate().always(function(state) {
@@ -155,18 +148,12 @@ EmailValiditon.prototype = {
 		});
 	},
 
-	processCache: function(def) {
-		var cached = EmailValiditon.getCache(this.email);
+	setCachedState: function() {
+		var def = $.Deferred();
+		var cached = EmailValiditon.getCache(this.value);
 		this.setState(cached);
 		def.resolve(cached);
 		return def;
-	},
-
-	isValueChanged: function() {
-		this.value = this.$field.val();
-		if (this.previousValue === this.value) return false;
-		this.previousValue = this.value;
-		return true;
 	},
 
 	onSubmit: function(e, data) {
