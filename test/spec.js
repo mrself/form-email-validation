@@ -280,9 +280,21 @@ describe('State', function() {
 		it('reset state on keyup', function(cb) {
 			module.setInValid();
 			var spied = spy.on(module, 'resetState');
-			module.$field.keyup().addClass('dsds');
+			var event = $.Event('keyup', {keyCode: 65}); // 'a' letter
+			module.$field.trigger(event);
 			setTimeout(function() {
 				expect(spied).to.have.been.called();
+				cb();
+			}, module.options.keyupResetDelay + 3);
+		});
+
+		it('do not reset state on keyup if key was not letter', function(cb) {
+			module.setInValid();
+			var spied = spy.on(module, 'resetState');
+			var event = $.Event('keyup', {keyCode: 13}); // Enter
+			module.$field.trigger(event);
+			setTimeout(function() {
+				expect(spied).not.to.have.been.called();
 				cb();
 			}, module.options.keyupResetDelay + 3);
 		});
@@ -306,4 +318,11 @@ describe('State', function() {
 			cb();
 		});
 	});
+});
+
+it('#isLetterKey', function() {
+	expect(module.isLetterKey({keyCode: 60})).to.be.false;
+	expect(module.isLetterKey({keyCode: 91})).to.be.false;
+	expect(module.isLetterKey({keyCode: 65})).to.be.true;
+	expect(module.isLetterKey({keyCode: 90})).to.be.true;
 });

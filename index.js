@@ -97,7 +97,8 @@ EmailValiditon.prototype = {
 			}, self.options.blurDelay);
 		}).on('focus', function() {
 			self.clearBlurTimeout();
-		}).on('keyup', function() {
+		}).on('keyup', function(e) {
+			if (!self.isLetterKey(e)) return;
 			clearTimeout(self.keyupTimer);
 			self.keyupTimer = setTimeout(function() {
 				self.resetState();
@@ -256,6 +257,15 @@ EmailValiditon.prototype = {
 	setOptions: function(options) {
 		this.options = $.extend(true, this.options, EmailValiditon.options, options);
 		this.options.triggerType = [].concat(this.options.triggerType);
+	},
+
+	/**
+	 * If event key is a letter
+	 * @param  {jQuery.Event}  e
+	 * @return {Boolean}
+	 */
+	isLetterKey: function(e) {
+		return e.keyCode >= 65 && e.keyCode <= 90;
 	},
 };
 
