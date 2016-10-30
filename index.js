@@ -41,6 +41,8 @@ function EmailValiditon() {
 	 * @type {number}
 	 */
 	this.blurTimeoutId = undefined;
+
+	this.keyupTimer = undefined;
 }
 
 EmailValiditon.prototype = {
@@ -85,14 +87,21 @@ EmailValiditon.prototype = {
 	setEvents: function() {
 		var self = this;
 		this.$form.on('submit', function(e) {
+			clearTimeout(self.keyupTimer);
 			self.onSubmit.apply(self, arguments);
 		});
 		this.$field.on('blur', function() {
+			clearTimeout(self.keyupTimer);
 			self.blurTimeoutId = setTimeout(function() {
 				self.run();
 			}, self.options.blurDelay);
 		}).on('focus', function() {
 			self.clearBlurTimeout();
+		}).on('keyup', function() {
+			clearTimeout(self.keyupTimer);
+			self.keyupTimer = setTimeout(function() {
+				self.resetState();
+			}, self.options.keyupResetDelay);
 		});
 	},
 
@@ -177,7 +186,8 @@ EmailValiditon.prototype = {
 		if (this.isState('valid') || this.isState('undefined')) {
 			this.$form.trigger('submit', {evPlugin: true});
 			this.$form.trigger('femm/submit');
-		}
+		} else if (this.isState('invalid'))
+			this.$field.focus();
 	},
 
 	/**
@@ -220,8 +230,7 @@ EmailValiditon.prototype = {
 		this.$field
 			.removeClass(this.dName + '--valid')
 			.addClass(this.dName + '--invalid')
-			.removeClass(this.dName + '--loading')
-			.focus();
+			.removeClass(this.dName + '--loading');
 	},
 
 	setPendingState: function() {
@@ -307,7 +316,9 @@ EmailValiditon.options = {
 	screenOffset: 30,
 	// Delay to make sure that validation is ran only once in the following events:
 	// field focus > form submit button click
-	blurDelay: 100
+	blurDelay: 100,
+	// Delay on keyup after which reset any state
+	keyupResetDelay: 200
 };
 EmailValiditon.setOptions = function(options) {
 	this.options = $.extend(true, this.options, options);

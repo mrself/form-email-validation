@@ -17,15 +17,13 @@ jsdom();
 
 before(function () {
 	global.$ = require('jquery');
+	$('body').append($('<div />', {id: 'fixture'}));
 });
 
 beforeEach(function() {
 	Module.clearCache();
-	global.window = window;
-	global.document = window.document;
-	self.window = window;
 	form = Faker.create('femm');
-	$('body').append(form.$form);
+	$('#fixture').html(form.$form);
 	module = Module.initField(form.$field, {
 		remoteValidate: function() {
 			var def = $.Deferred();
@@ -186,6 +184,13 @@ describe('Validation process', function() {
 			cb();
 		});
 	});
+
+	it('field is focused on form submit when email is invalid', function() {
+		var spied = spy();
+		module.$field.on('focus', spied);
+		module.$form.submit();
+		expect(spied).to.have.been.called();
+	});
 });
 
 describe('Options', function() {
@@ -207,12 +212,9 @@ describe('Options', function() {
 
 describe('State', function() {
 	it('#setInvalid', function() {
-		var spied = spy();
-		module.$field.on('focus', spied);
 		module.setInValid();
 		expect(form.$field.attr('class')).to.eql('femm femm--inited femm--invalid');
 		expect(form.$submit.attr('class')).to.eql('femmSubmit femmSubmit--disabled');
-		expect(spied).to.have.been.called();
 	});
 
 	it('#setValid', function() {
@@ -262,5 +264,15 @@ describe('State', function() {
 			expect(module.state).to.eql(Module.STATES.UNDEFINED);
 			cb();
 		});
+	});
+
+	it('reset state on keyup', function(cb) {
+		module.setInValid();
+		var spied = spy.on(module, 'resetState');
+		module.$field.keyup().addClass('dsds');
+		setTimeout(function() {
+			expect(spied).to.have.been.called();
+			cb();
+		}, module.options.keyupResetDelay + 3);
 	});
 });
